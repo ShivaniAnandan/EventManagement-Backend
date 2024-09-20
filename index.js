@@ -21,15 +21,11 @@ app.use(cors());
 
 //Enable CORS for all routes
 app.use(cors({
-    origin: 'https://marvelous-tanuki-ec42fd.netlify.app', // Replace with your frontend URL
-    methods: ['GET', 'POST', 'PUT', 'DELETE'], // Adjust methods as necessary
-    credentials: true // If you need to send cookies or authorization headers
+    origin: 'https://marvelous-tanuki-ec42fd.netlify.app', 
+    methods: ['GET', 'POST', 'PUT', 'DELETE'], 
+    credentials: true 
   }));
-// app.use(cors({
-//   origin: 'http://localhost:5174', // Replace with your frontend URL
-//   methods: ['GET', 'POST', 'PUT', 'DELETE'], // Adjust methods as necessary
-//   credentials: true // If you need to send cookies or authorization headers
-// }));
+
 
 app.use(cookieParser());
 
@@ -54,5 +50,4 @@ app.use('/', (req, res) => {
 
 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
-
 
