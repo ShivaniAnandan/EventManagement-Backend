@@ -42,79 +42,6 @@ export const getTickets = async (req, res) => {
   }
 };
 
-// Purchase a ticket
-// export const purchaseTicket = async (req, res) => {
-//   const { userId, ticketId, quantity } = req.body;
-
-//   try {
-//     // Find the user by ID
-//     const user = await User.findById(userId);
-//     if (!user) {
-//       return res.status(404).json({ message: 'User not found' });
-//     }
-
-//     // Find the ticket
-//     const ticket = await Ticket.findById(ticketId).populate('event'); // Populate event if necessary
-//     if (!ticket) {
-//       return res.status(404).json({ message: 'Ticket not found' });
-//     }
-
-//     // Check ticket availability
-//     if (quantity > ticket.availableQuantity) {
-//       return res.status(400).json({ message: 'Not enough tickets available' });
-//     }
-
-//     // Calculate total amount
-//     const totalAmount = ticket.price * quantity;
-
-//     // Create a Stripe Checkout session
-//     const session = await stripe.checkout.sessions.create({
-//       payment_method_types: ['card'],
-//       line_items: [{
-//         price_data: {
-//           currency: 'usd',
-//           product_data: {
-//             name: 'Event Ticket',
-//           },
-//           unit_amount: Math.round(totalAmount * 100), // Amount in cents
-//         },
-//         quantity,
-//       }],
-//       mode: 'payment',
-//       success_url: `${process.env.DOMAIN}/paymentsuccess`, // Fixed string interpolation
-//       cancel_url: `${process.env.DOMAIN}/paymentfailure`,   // Fixed string interpolation
-//     });
-
-//     // Create an order (optional)
-//     const order = new Order({
-//       user: userId,
-//       event: ticket.event._id,
-//       ticket: ticketId,
-//       quantity,
-//       totalAmount,
-//       paymentStatus: 'pending',
-//       paymentIntentId: session.id,
-//     });
-
-//     // Save the order in the database
-//     await order.save();
-
-//     // Update ticket quantity after successful order creation
-//     ticket.availableQuantity -= quantity;
-//     await ticket.save();
-
-//     // Send a successful response
-//     res.status(200).json({ sessionId: session.id });
-//   } catch (error) {
-//     // Handle Stripe errors or other possible errors
-//     if (error.raw && error.raw.message) {
-//       return res.status(400).json({ message: error.raw.message });
-//     }
-
-//     res.status(500).json({ message: 'Server Error', error: error.message });
-//   }
-// };
-
 export const purchaseTicket = async (req, res) => {
   const { userId, ticketId, quantity } = req.body;
 
@@ -192,39 +119,6 @@ export const purchaseTicket = async (req, res) => {
     res.status(500).json({ message: 'Server Error', error: error.message });
   }
 };
-
-
-// Webhook to handle Stripe payment confirmation
-export const handlePaymentWebhook = async (req, res) => {
-  const sig = req.headers['stripe-signature'];
-
-  let event;
-
-  try {
-    event = stripe.webhooks.constructEvent(req.body, sig, process.env.STRIPE_WEBHOOK_SECRET);
-  } catch (err) {
-    console.log(`Webhook error: ${err.message}`);
-    return res.status(400).send(`Webhook Error: ${err.message}`);
-  }
-
-  // Handle the event for successful payment
-  if (event.type === 'checkout.session.completed') {
-    const session = event.data.object;
-
-    // Find the order associated with the payment
-    const order = await Order.findOne({ paymentIntentId: session.id });
-
-    if (order) {
-      // Update the payment status to success
-      order.paymentStatus = 'success';
-      await order.save();
-    }
-  }
-
-  // Return a response to acknowledge receipt of the event
-  res.json({ received: true });
-};    
-
 
 // View purchased tickets
 export const getPurchasedTickets = async (req, res) => {
