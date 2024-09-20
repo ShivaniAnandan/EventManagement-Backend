@@ -186,21 +186,29 @@ export const cancelTicket = async (req, res) => {
   }
 };
 
-// Transfer a ticket to another user
 export const transferTicket = async (req, res) => {
   const { orderId, newUserId } = req.body;
 
   try {
-    const order = await Order.findById(orderId);
+    const order = await Order.findById(orderId).populate('event'); // Populate the event field
     if (!order) return res.status(404).json({ message: 'Order not found' });
 
     // Find the new user
     const newUser = await User.findById(newUserId);
     if (!newUser) return res.status(404).json({ message: 'New user not found' });
 
+    // Get the old user ID
+    const oldUserId = order.user;
+
     // Update the order with the new user
     order.user = newUserId;
     await order.save();
+
+    // Update the event's attendees array
+    const event = order.event; // Get the populated event
+    event.attendees = event.attendees.filter(attendee => attendee.toString() !== oldUserId.toString());
+    event.attendees.push(newUserId); // Add the new user ID
+    await event.save();
 
     res.status(200).json({ message: 'Ticket transferred successfully', order });
   } catch (error) {
