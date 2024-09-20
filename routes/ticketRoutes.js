@@ -12,10 +12,10 @@ router.post('/', authenticateAdmin, createTicket);
 router.get('/get-tickets', getTickets);
 
 // Purchase a ticket
-router.post('/purchase', authenticate , purchaseTicket);
+router.post('/purchase',  purchaseTicket);
 
 //handle webhook
-router.post('/webhook', authenticate, handlePaymentWebhook);
+router.post('/webhook', handlePaymentWebhook);
 
 // Get purchased tickets (for users)
 router.get('/', getPurchasedTickets);
