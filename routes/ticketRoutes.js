@@ -1,5 +1,5 @@
 import express from 'express';
-import { createTicket, purchaseTicket, getPurchasedTickets, cancelTicket, transferTicket, getTickets } from '../controllers/ticketController.js';
+import { createTicket, purchaseTicket, getPurchasedTickets, cancelTicket, transferTicket, getTickets,handlePaymentWebhook } from '../controllers/ticketController.js';
 import { authenticate } from '../middleware/authenticate.js';
 import {authenticateAdmin} from '../middleware/authenticateAdmin.js';
 
@@ -13,6 +13,9 @@ router.get('/get-tickets', getTickets);
 
 // Purchase a ticket
 router.post('/purchase', authenticate , purchaseTicket);
+
+//handle webhook
+router.post('/webhook', authenticate, handlePaymentWebhook);
 
 // Get purchased tickets (for users)
 router.get('/', getPurchasedTickets);
