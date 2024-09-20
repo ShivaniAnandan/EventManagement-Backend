@@ -67,22 +67,22 @@ export const purchaseTicket = async (req, res) => {
     // Calculate total amount
     const totalAmount = ticket.price * quantity;
 
-    // Create a Stripe Checkout session
+    // Create a Stripe Checkout session using INR currency
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
       line_items: [{
         price_data: {
-          currency: 'usd',
+          currency: 'inr', // Use INR
           product_data: {
             name: 'Event Ticket',
           },
-          unit_amount: Math.round(totalAmount * 100), // Amount in cents
+          unit_amount: Math.round(totalAmount * 100), // Convert INR to paise
         },
         quantity,
       }],
       mode: 'payment',
-      success_url: `${process.env.DOMAIN}/paymentsuccess`, // Fixed string interpolation
-      cancel_url: `${process.env.DOMAIN}/paymentfailure`,   // Fixed string interpolation
+      success_url: `${process.env.DOMAIN}/paymentsuccess`, // Redirect on successful payment
+      cancel_url: `${process.env.DOMAIN}/paymentfailure`,   // Redirect on failed payment
     });
 
     // Create an order (optional)
