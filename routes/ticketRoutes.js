@@ -21,9 +21,9 @@ router.post('/webhook', authenticate, handlePaymentWebhook);
 router.get('/', getPurchasedTickets);
 
 // Cancel a purchased ticket
-router.delete('/cancel',  authenticate, cancelTicket);
+router.delete('/cancel',  cancelTicket);
 
 // Transfer a ticket to another user
-router.put('/transfer', authenticate, transferTicket);
+router.put('/transfer',  transferTicket);
 
 export default router;

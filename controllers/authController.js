@@ -78,11 +78,12 @@ export const login = async (req, res) => {
 
     // Set token in cookie
     res.cookie('token', token, {
-      httpOnly: true, // Helps to prevent XSS attacks
-      secure: process.env.NODE_ENV === 'production', // Use HTTPS in production
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
       maxAge: 3600000, // 1 hour in milliseconds
+      sameSite: 'None', // Allows cross-origin requests
     });
-
+    
     res.json({ token, user });
   } catch (error) {
     res.status(500).json({ message: 'Server Error' , error: error.message});
