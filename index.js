@@ -21,7 +21,7 @@ app.use(cors());
 
 //Enable CORS for all routes
 app.use(cors({
-    origin: 'https://marvelous-tanuki-ec42fd.netlify.app', 
+    origin: ['https://marvelous-tanuki-ec42fd.netlify.app', 'http://localhost:5173'],
     methods: ['GET', 'POST', 'PUT', 'DELETE'], 
     credentials: true 
   }));
